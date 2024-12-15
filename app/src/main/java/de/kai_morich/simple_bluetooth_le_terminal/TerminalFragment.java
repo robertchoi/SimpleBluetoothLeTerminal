@@ -23,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,10 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     private boolean pendingNewline = false;
     private String newline = TextUtil.newline_crlf;
 
+    private Button btn_auto;
+    private Button btn_open;
+    private Button btn_close;
+
     /*
      * Lifecycle
      */
@@ -59,6 +64,46 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         setHasOptionsMenu(true);
         setRetainInstance(true);
         deviceAddress = getArguments().getString("device");
+
+        Activity activity = getActivity();
+        if (activity != null) {
+            Button btn_eng = activity.findViewById(R.id.btn_eng);
+            btn_auto = activity.findViewById(R.id.btn_auto);
+            btn_open = activity.findViewById(R.id.btn_open);
+            btn_close = activity.findViewById(R.id.btn_close);
+            Button btn_connect = activity.findViewById(R.id.btn_connect);
+            Button btn_disconnect = activity.findViewById(R.id.btn_disconnect);
+
+            btn_eng.setVisibility(View.VISIBLE);
+            btn_auto.setVisibility(View.VISIBLE);
+            btn_open.setVisibility(View.VISIBLE);
+            btn_close.setVisibility(View.VISIBLE);
+            btn_connect.setVisibility(View.VISIBLE);
+            btn_disconnect.setVisibility(View.VISIBLE);
+        }
+
+        btn_auto.setOnClickListener(v -> {
+            Byte[] autoByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4a, (byte)0xa5, (byte)0x03};
+            send(new String(convertByteArray(autoByte)));
+        });
+
+        btn_open.setOnClickListener(v -> {
+            Byte[] openByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4b, (byte)0xa6, (byte)0x03};
+            send(new String(convertByteArray(openByte)));
+
+        });
+
+        btn_close.setOnClickListener(v -> {
+            Byte[] closeByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4c, (byte)0xa7, (byte)0x03};
+            send(new String(convertByteArray(closeByte)));
+        });
+
+
+
+
+        
+
+
     }
 
     @Override
@@ -128,9 +173,9 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_terminal, container, false);
-        receiveText = view.findViewById(R.id.receive_text);                          // TextView performance decreases with number of spans
-        receiveText.setTextColor(getResources().getColor(R.color.colorRecieveText)); // set as default color to reduce number of spans
-        receiveText.setMovementMethod(ScrollingMovementMethod.getInstance());
+        //receiveText = view.findViewById(R.id.receive_text);                          // TextView performance decreases with number of spans
+        //receiveText.setTextColor(getResources().getColor(R.color.colorRecieveText)); // set as default color to reduce number of spans
+        //receiveText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         sendText = view.findViewById(R.id.send_text);
         hexWatcher = new TextUtil.HexWatcher(sendText);
@@ -162,7 +207,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.clear) {
-            receiveText.setText("");
+            //receiveText.setText("");
             return true;
         } else if (id == R.id.newline) {
             String[] newlineNames = getResources().getStringArray(R.array.newline_names);
@@ -238,7 +283,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
             }
             SpannableStringBuilder spn = new SpannableStringBuilder(msg + '\n');
             spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorSendText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            receiveText.append(spn);
+            //receiveText.append(spn);
             service.write(data);
         } catch (Exception e) {
             onSerialIoError(e);
@@ -260,9 +305,9 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                         if(spn.length() >= 2) {
                             spn.delete(spn.length() - 2, spn.length());
                         } else {
-                            Editable edt = receiveText.getEditableText();
-                            if (edt != null && edt.length() >= 2)
-                                edt.delete(edt.length() - 2, edt.length());
+                            //Editable edt = receiveText.getEditableText();
+                            //if (edt != null && edt.length() >= 2)
+                            //    edt.delete(edt.length() - 2, edt.length());
                         }
                     }
                     pendingNewline = msg.charAt(msg.length() - 1) == '\r';
@@ -270,13 +315,13 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                 spn.append(TextUtil.toCaretString(msg, newline.length() != 0));
             }
         }
-        receiveText.append(spn);
+        //receiveText.append(spn);
     }
 
     private void status(String str) {
         SpannableStringBuilder spn = new SpannableStringBuilder(str + '\n');
         spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        receiveText.append(spn);
+        //receiveText.append(spn);
     }
 
     /*
@@ -327,6 +372,14 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     public void onSerialIoError(Exception e) {
         status("connection lost: " + e.getMessage());
         disconnect();
+    }
+
+    private byte[] convertByteArray(Byte[] byteArray) {
+        byte[] result = new byte[byteArray.length];
+        for (int i = 0; i < byteArray.length; i++) {
+            result[i] = byteArray[i]; // Unbox Byte to byte
+        }
+        return result;
     }
 
 }
