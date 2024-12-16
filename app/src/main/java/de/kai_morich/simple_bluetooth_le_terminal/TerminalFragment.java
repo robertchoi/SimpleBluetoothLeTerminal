@@ -83,19 +83,19 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         }
 
         btn_auto.setOnClickListener(v -> {
-            Byte[] autoByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4a, (byte)0xa5, (byte)0x03};
-            send(new String(convertByteArray(autoByte)));
+            byte[] autoByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4a, (byte)0xa5, (byte)0x03};
+            sendBytes(autoByte);
         });
 
         btn_open.setOnClickListener(v -> {
-            Byte[] openByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4b, (byte)0xa6, (byte)0x03};
-            send(new String(convertByteArray(openByte)));
+            byte[] openByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4b, (byte)0xa6, (byte)0x03};
+            sendBytes(openByte);
 
         });
 
         btn_close.setOnClickListener(v -> {
-            Byte[] closeByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4c, (byte)0xa7, (byte)0x03};
-            send(new String(convertByteArray(closeByte)));
+            byte[] closeByte = {(byte)0x02, (byte)0x06, (byte)0x53, (byte)0x4c, (byte)0xa7, (byte)0x03};
+            sendBytes(closeByte);
         });
 
 
@@ -288,6 +288,20 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         } catch (Exception e) {
             onSerialIoError(e);
         }
+    }
+
+    private void sendBytes(byte[] data) {
+        if(connected != Connected.True) {
+            Toast.makeText(getActivity(), "not connected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            service.write(data);
+        } catch (Exception e) {
+            onSerialIoError(e);
+        }
+        
     }
 
     private void receive(ArrayDeque<byte[]> datas) {
