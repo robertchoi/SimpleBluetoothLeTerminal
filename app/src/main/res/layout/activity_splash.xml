@@ -7,7 +7,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/at400s"
+        android:src="@drawable/lms"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

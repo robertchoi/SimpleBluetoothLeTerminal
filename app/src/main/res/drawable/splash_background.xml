@@ -3,7 +3,7 @@
     <item android:drawable="@color/white"/> <!-- 배경색 -->
     <item>
         <bitmap
-            android:src="@drawable/at400s"
+            android:src="@drawable/lms"
             android:gravity="center"/>
     </item>
 </layer-list>
