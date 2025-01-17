@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private Button btn_open;
     private Button btn_close;
     private Button btn_eng;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,23 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         btn_auto.setOnClickListener(v -> {
             Toast.makeText(MainActivity.this, "Auto", Toast.LENGTH_SHORT).show();
 
+        });
+
+        // 하단 네비게이션 바 설정
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
+                Toast.makeText(MainActivity.this, "홈", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.nav_dashboard) {
+                Toast.makeText(MainActivity.this, "대시보드", Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (itemId == R.id.nav_notifications) {
+                Toast.makeText(MainActivity.this, "알림", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+            return false;
         });
     }
 
